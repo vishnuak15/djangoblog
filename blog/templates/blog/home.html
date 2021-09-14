@@ -1,0 +1,36 @@
+{% extends "blog/base.html" %} {% block content %}
+<form class="d-flex" method="GET">
+    {% csrf_token %}
+    <input name="query" class="form-control me-2" type="search" placeholder="Search Posts" aria-label="Search">
+    <button class="btn btn-outline-success" type="submit">Search</button>
+</form><br> {% if posts %} {% for post in posts %}
+<article class="media content-section">
+    <img class="rounded-circle article-img" src="{{ post.author.profile.image.url }}">
+    <div class="media-body">
+        <div class="article-metadata">
+            <a class="mr-2" href="{% url 'user-posts' post.author.username %}">{{ post.author }}</a>
+            <small class="text-muted">{{ post.date_posted|date:"F d, Y" }}</small>
+        </div>
+        <h2><a class="article-title" href=" {% url 'post-detial' post.id %} ">{{ post.title }}</a></h2>
+        <p class="article-content">{{ post.content }}</p>
+    </div>
+</article>
+{% endfor %} {% if nums %}
+<nav aria-label="Page navigation example">
+    <ul class="pagination justify-content-center">
+        {% if posts.has_previous %}
+        <li class="page-item"><a class="page-link" href="?query={{query}}&page=1">&laquo</a></li>
+        {% endif %} {% for i in nums %} {% if forloop.counter == posts.number %}
+        <li class="page-item active"><a class="page-link" href="?query={{query}}&page={{ forloop.counter }}">{{ forloop.counter }}</a></li>
+        {% else %}
+        <li class="page-item"><a class="page-link" href="?query={{query}}&page={{ forloop.counter }}">{{ forloop.counter }}</a></li>
+        {% endif %} {% endfor %} {% if posts.has_next %}
+        <li class="page-item"><a class="page-link" href="?query={{query}}&page={{ posts.paginator.num_pages }}">&raquo </a></li>
+        {% endif %}
+    </ul>
+</nav>
+{% endif %} {% else %}
+<div class="container">
+    <h2>OOps, sorry No results found!</h2>
+</div>
+{% endif %} {% endblock content %}
